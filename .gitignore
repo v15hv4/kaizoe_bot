@@ -1,4 +1,5 @@
 tg_bot/config.py
+kaizoe_env/
 *.pyc
 .idea/
 .project
