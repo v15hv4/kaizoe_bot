@@ -24,7 +24,9 @@ def broadcast(bot: Bot, update: Update):
         update.effective_message.reply_text("Broadcast complete. {} groups failed to receive the message.".format(failed))
 
 
-__help__ = ""
+__help__ = """
+- /broadcast <chat IDs separated by commas> "<text>": Broadcast text to all given chat IDs
+"""
 
 __mod_name__ = "Broadcast"
 
