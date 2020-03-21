@@ -1,10 +1,20 @@
 from telegram import ParseMode, Update, Bot, Chat
-from telegram.ext import CommandHandler, run_async
+from telegram.ext import CommandHandler, MessageHandler, BaseFilter, run_async
 
 import urllib.request, json, random
 
 from tg_bot import dispatcher
+from tg_bot.modules.sql import bruh_sql as sql
 
+
+class BruhFilter(BaseFilter):
+    def filter(self, message):
+        if message.text:
+            return message.text.lower() == 'bruh' or message.text.lower() == 'bruh moment'
+        elif message.sticker:
+            return message.sticker.file_id[-26:] == 'AAL9AAPUg2ggEepgeyH76-YYBA'
+
+bruh_filter = BruhFilter()
 
 @run_async
 def dad_joke(bot: Bot, update: Update):
@@ -29,6 +39,21 @@ def dad_joke(bot: Bot, update: Update):
         parse_mode = ParseMode.MARKDOWN
     )
 
+
+@run_async
+def bruh(bot: Bot, update: Update):
+    message = update.effective_message
+    bruh_count = sql.new_bruh_moment(message.chat.id)
+
+    bot.send_message(
+        message.chat.id,
+        'A bruh moment has been reported.\n\n`Total bruh moments in this chat so far: %d`' % (int(bruh_count)),
+        parse_mode = ParseMode.MARKDOWN
+    )
+
+
 DAD_JOKE_HANDLER = CommandHandler('dadjoke', dad_joke)
+BRUH_COUNT_HANDLER = MessageHandler(bruh_filter, bruh)
 
 dispatcher.add_handler(DAD_JOKE_HANDLER)
+dispatcher.add_handler(BRUH_COUNT_HANDLER)
