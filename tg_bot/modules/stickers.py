@@ -1,5 +1,6 @@
 from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, run_async
+from PIL import Image
 
 from tg_bot import dispatcher
 
@@ -9,14 +10,20 @@ def add_sticker(bot: Bot, update: Update):
     user = update.effective_user
     chat = update.effective_chat
     set_name = 'pack_' + str(chat.id)[1:] + '_by_' + bot.username
-    # TODO: If replied to images, optimize and stickerize 
     if message.reply_to_message.sticker:
         file_id = message.reply_to_message.sticker.file_id
+        sticker_file = bot.get_file(file_id)
+        sticker_file.download('sticker_input.png')
+    elif message.reply_to_message.photo:
+        file_id = message.reply_to_message.photo[-1].file_id
+        sticker_file = bot.get_file(file_id)
+        sticker_file.download('sticker_input.png')
+        sticker = Image.open('sticker_input.png')
+        sticker.thumbnail((512, 512))
+        sticker.save('sticker_input.png')
     else:
         message.reply_text('bruh')
         return
-    sticker_file = bot.get_file(file_id)
-    sticker_file.download('sticker_input.png')
     sticker_target = 'sticker_input.png'
     sticker_emoji = '👌'
     
