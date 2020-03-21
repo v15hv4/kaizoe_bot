@@ -16,6 +16,14 @@ class BruhFilter(BaseFilter):
 
 bruh_filter = BruhFilter()
 
+
+class WhomstFilter(BaseFilter):
+    def filter(self, message):
+        return 'kaizoe' in message.text and ('who' in message.text or 'what' in message.text)
+
+whomst_filter = WhomstFilter()
+
+
 @run_async
 def dad_joke(bot: Bot, update: Update):
     message = update.effective_message
@@ -52,8 +60,18 @@ def bruh(bot: Bot, update: Update):
     )
 
 
+@run_async
+def whomst(bot: Bot, update: Update):
+    message = update.effective_message
+
+    message.reply_text(
+        'ur mom lmao'
+    )
+
 DAD_JOKE_HANDLER = CommandHandler('dadjoke', dad_joke)
 BRUH_COUNT_HANDLER = MessageHandler(bruh_filter, bruh)
+WHOMST_HANDLER = MessageHandler(whomst_filter, whomst)
 
 dispatcher.add_handler(DAD_JOKE_HANDLER)
 dispatcher.add_handler(BRUH_COUNT_HANDLER)
+dispatcher.add_handler(WHOMST_HANDLER)
