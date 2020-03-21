@@ -1,6 +1,7 @@
 from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, run_async
 from PIL import Image
+import os
 
 from tg_bot import dispatcher
 
@@ -58,6 +59,8 @@ def add_sticker(bot: Bot, update: Update):
                 parse_mode = ParseMode.MARKDOWN,
                 reply_to_message_id = message.reply_to_message.message_id
             )
+
+    os.remove('sticker_input.png')
 
 
 __mod_name__ = 'Stickers'
