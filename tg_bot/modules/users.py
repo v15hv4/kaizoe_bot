@@ -49,20 +49,19 @@ def get_user_id(username):
 
 @run_async
 def broadcast(bot: Bot, update: Update):
-    to_send = update.effective_message.text.split(None, 1)
+    message_args = update.effective_message.text.split('\"', 1)
+    chats = message_args[0][11:].split(',')[:-1]
+    to_send = str(message_args[1])[:-1] + '\n\n:: @' + update.effective_user.username
     if len(to_send) >= 2:
-        chats = sql.get_all_chats() or []
         failed = 0
         for chat in chats:
             try:
-                bot.sendMessage(int(chat.chat_id), to_send[1])
+                bot.sendMessage(int(chat), to_send)
                 sleep(0.1)
             except TelegramError:
                 failed += 1
-                LOGGER.warning("Couldn't send broadcast to %s, group name %s", str(chat.chat_id), str(chat.chat_name))
-
-        update.effective_message.reply_text("Broadcast complete. {} groups failed to receive the message, probably "
-                                            "due to being kicked.".format(failed))
+                LOGGER.warning("Couldn't send broadcast to %s", str(chat))
+        update.effective_message.reply_text("Broadcast complete. {} groups failed to receive the message.".format(failed))
 
 
 @run_async
