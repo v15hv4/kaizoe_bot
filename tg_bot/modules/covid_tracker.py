@@ -39,8 +39,9 @@ def cov(bot: Bot, update: Update):
     cov_spider.start()
     bot.send_message(
         message.chat.id,
-        'Number of confirmed cases in %s: %s\nDeceased: %s\nRecovered: %s' % (country, confirmed, deceased, recovered),
-        parse_mode = ParseMode.MARKDOWN
+        '`COVID-19 Tracker`\n*Number of confirmed cases in %s:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ ncov2019.live' % (country, confirmed, deceased, recovered),
+        parse_mode = ParseMode.MARKDOWN,
+        disable_web_page_preview = True
     )
 
 __mod_name__ = 'COVID-19 Tracker'
