@@ -39,6 +39,11 @@ def cov(bot: Bot, update: Update):
         disable_web_page_preview = True
     )
 
+__help__ = """
+*Admin only:*
+ - /cov <country>: Get real time COVID-19 stats for the input country
+"""
+
 __mod_name__ = 'COVID-19 Tracker'
 
 COV_HANDLER = CommandHandler('cov', cov)
