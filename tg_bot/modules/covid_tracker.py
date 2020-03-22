@@ -13,9 +13,8 @@ def cov(bot: Bot, update: Update):
     deceased = 0
     recovered = 0
     message = update.effective_message
-    try:
-        selected = (''.join([message.text.split(' ')[i] + ' ' for i in range(1, len(message.text.split(' ')))])).strip()
-    except:
+    selected = (''.join([message.text.split(' ')[i] + ' ' for i in range(1, len(message.text.split(' ')))])).strip()
+    if not selected:
         selected = 'TOTAL'
     url = 'https://ncov2019.live/'
     text = requests.get(url).text
