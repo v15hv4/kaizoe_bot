@@ -7,7 +7,6 @@ import requests
 from parsel import Selector
 
 
-# TODO: Switch to Parsel instead of Scrapy
 def cov(bot: Bot, update: Update):
     country = ''
     confirmed = 0
@@ -15,7 +14,7 @@ def cov(bot: Bot, update: Update):
     recovered = 0
     message = update.effective_message
     try:
-        selected = message.text.split(' ')[1]
+        selected = (''.join([message.text.split(' ')[i] + ' ' for i in range(1, len(message.text.split(' ')))])).strip()
     except:
         selected = 'TOTAL'
     url = 'https://ncov2019.live/'
