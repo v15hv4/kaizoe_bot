@@ -1,6 +1,7 @@
 from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, run_async
 from PIL import Image
+from math import ceil
 import os
 
 from tg_bot import dispatcher
@@ -20,8 +21,21 @@ def add_sticker(bot: Bot, update: Update):
         sticker_file = bot.get_file(file_id)
         sticker_file.download('sticker_input.png')
         sticker = Image.open('sticker_input.png')
-        sticker.thumbnail((512, 512))
+        print(sticker.width, sticker.height)
+        if sticker.width < 512 and sticker.height < 512:
+            print('what the fuck')
+            if sticker.width < sticker.height:
+                print('what the fuck 2')
+                asp_ratio = sticker.width / sticker.height
+                sticker = sticker.resize((ceil(asp_ratio * 512), 512))
+            else:
+                print('what the fuck 3')
+                asp_ratio = sticker.height / sticker.width
+                sticker = sticker.resize((512, ceil(asp_ratio * 512)))
+        else:
+            sticker.thumbnail((512, 512))
         sticker.save('sticker_input.png')
+        print(sticker.width, sticker.height)
     else:
         message.reply_text('bruh')
         return
