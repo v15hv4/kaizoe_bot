@@ -19,7 +19,10 @@ bruh_filter = BruhFilter()
 
 class WhomstFilter(BaseFilter):
     def filter(self, message):
-        return 'kaizoe' in message.text.lower() and ('who' in message.text.lower() or 'what' in message.text.lower())
+        if message.text:
+            if 'kaizoe' in message.text.lower():
+                if ('who' in message.text.lower() or 'what' in message.text.lower()):
+                    return True
 
 whomst_filter = WhomstFilter()
 
