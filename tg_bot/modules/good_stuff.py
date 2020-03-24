@@ -29,14 +29,15 @@ whomst_filter = WhomstFilter()
 
 class GreetingFilter(BaseFilter):
     def filter(self, message):
-        return (
-            'kaizoe' in message.text.lower() and 
-            (
-                'hi' in message.text.lower() or 
-                'hey' in message.text.lower() or
-                'hello' in message.text.lower()
+        if message.text:
+            return (
+                'kaizoe' in message.text.lower() and 
+                (
+                    'hi' in message.text.lower() or 
+                    'hey' in message.text.lower() or
+                    'hello' in message.text.lower()
+                )
             )
-        )
 
 greeting_filter = GreetingFilter()
 
