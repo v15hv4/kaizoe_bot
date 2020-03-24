@@ -14,21 +14,25 @@ def cov(bot: Bot, update: Update):
     recovered = 0
     message = update.effective_message
     selected = (''.join([message.text.split(' ')[i] + ' ' for i in range(1, len(message.text.split(' ')))])).strip()
-    if not selected:
-        selected = 'TOTAL'
     url = 'https://ncov2019.live/'
     text = requests.get(url).text
     selector = Selector(text = text)
     table = selector.css('#sortable_table_Global')
     rows = table.css('tr')
-    for row in rows:
-        country = row.css('.text--gray::text').getall()[0].strip()
-        if country.lower() == selected.lower():
-            confirmed = row.css('.text--green::text').getall()[0].strip()
-            deceased = row.css('.text--red::text').getall()[0].strip()
-            recovered = row.css('.text--blue::text').getall()[0].strip()
-            break
-        country = selected
+    if not selected:
+        country = country = rows[1].css('.text--gray::text').getall()[0].strip()
+        confirmed = rows[1].css('.text--green::text').getall()[0].strip()
+        deceased = rows[1].css('.text--red::text').getall()[0].strip()
+        recovered = rows[1].css('.text--blue::text').getall()[0].strip()
+    else:
+        for row in rows[2:]:
+            country = row.css('.text--gray::text').getall()[1].strip()
+            if country.lower() == selected.lower():
+                confirmed = row.css('.text--green::text').getall()[0].strip()
+                deceased = row.css('.text--red::text').getall()[0].strip()
+                recovered = row.css('.text--blue::text').getall()[0].strip()
+                break
+            country = selected
 
     bot.send_message(
         message.chat.id,
