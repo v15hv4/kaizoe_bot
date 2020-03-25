@@ -36,6 +36,9 @@ def cov(bot: Bot, update: Update):
                 break
             country = ''
 
+    if not country:
+        country = selected
+
     bot.send_message(
         message.chat.id,
         '`COVID-19 Tracker`\n*Number of confirmed cases in %s:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ ncov2019.live' % (country, confirmed, deceased, recovered),
@@ -95,15 +98,18 @@ def covindia(bot: Bot, update: Update):
         if state:
             selected = (state.split(' ')[0] + ''.join(['+' + state.split(' ')[i] for i in range(1, len(state.split(' ')))]))
             url_india = 'http://portal.covid19india.org/export?diagnosed_date=&detected_state=%s&detected_city=&gender=&current_status=&submit=Apply+Filters&_export=json' % (selected)
-            json_url = urlopen(url_india)
-            state_dict = json.loads(json_url.read())
-            for entry in state_dict:
-                confirmed += 1
-                if entry['Current status'] == 'Deceased':
-                    deceased += 1
-                elif entry['Current status'] == 'Recovered':
-                    recovered += 1
-            state = state_dict[0]['Detected state']
+            try:
+                json_url = urlopen(url_india)
+                state_dict = json.loads(json_url.read())
+                for entry in state_dict:
+                    confirmed += 1
+                    if entry['Current status'] == 'Deceased':
+                        deceased += 1
+                    elif entry['Current status'] == 'Recovered':
+                        recovered += 1
+                state = state_dict[0]['Detected state']
+            except:
+                pass
 
             bot.send_message(
                 message.chat.id,
