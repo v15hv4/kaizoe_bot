@@ -48,83 +48,37 @@ def cov(bot: Bot, update: Update):
 
 def covindia(bot: Bot, update: Update):
     message = update.effective_message
-    state_list = [
-        'Andaman and Nicobar Islands',
-        'Andhra Pradesh',
-        'Assam',
-        'Bihar',
-        'Chandigarh',
-        'Chattisgarh',
-        'Dadar and Nagar Haveli',
-        'Daman and Diu',
-        'Delhi',
-        'Goa',
-        'Gujarat',
-        'Haryana',
-        'Himachal Pradesh',
-        'Jammu and Kashmir',
-        'Jharkand',
-        'Karnataka',
-        'Kerala',
-        'Ladakh',
-        'Lakshadweep',
-        'Madhya Pradesh',
-        'Maharashtra',
-        'Manipur',
-        'Meghalaya',
-        'Mizoram',
-        'Nagaland',
-        'Odisha',
-        'Puducherry',
-        'Punjab',
-        'Rajasthan',
-        'Sikkim',
-        'Tamil Nadu',
-        'Telangana',
-        'Tripura',
-        'Uttar Pradesh',
-        'Uttarakhand',
-        'West Bengal'
-    ]
     state = ''
     confirmed = 0
     deceased = 0
     recovered = 0
     state_input = ''.join([message.text.split(' ')[i] + ' ' for i in range(1, len(message.text.split(' ')))]).strip()
     if state_input:
-        for state_check in state_list:
-            if state_check.lower() == state_input.lower():
-                state = state_check
-        if state:
-            selected = (state.split(' ')[0] + ''.join(['+' + state.split(' ')[i] for i in range(1, len(state.split(' ')))]))
-            url_india = 'http://portal.covid19india.org/export?diagnosed_date=&detected_state=%s&detected_city=&gender=&current_status=&submit=Apply+Filters&_export=json' % (selected)
-            try:
-                json_url = urlopen(url_india)
-                state_dict = json.loads(json_url.read())
-                for entry in state_dict:
-                    confirmed += 1
-                    if entry['Current status'] == 'Deceased':
-                        deceased += 1
-                    elif entry['Current status'] == 'Recovered':
-                        recovered += 1
-                state = state_dict[0]['Detected state']
-            except:
-                pass
-
-            bot.send_message(
-                message.chat.id,
-                '`COVID-19 Tracker`\n*Number of confirmed cases in %s:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ covid19india.org' % (state, confirmed, deceased, recovered),
-                parse_mode = ParseMode.MARKDOWN,
-                disable_web_page_preview = True
-            )
-            return
-            
-    bot.send_message(
-        message.chat.id,
-        'You need to specify a valid Indian state!',
-        parse_mode = ParseMode.MARKDOWN,
-        disable_web_page_preview = True
-    )
+        url_india = 'https://api.covid19india.org/data.json'
+        json_url = urlopen(url_india)
+        state_dict = json.loads(json_url.read())
+        for sdict in state_dict['statewise']:
+            if sdict['state'].lower() == state_input.lower():
+                confirmed = sdict['confirmed']
+                deceased = sdict['deaths']
+                recovered = sdict['recovered']
+                state = sdict['state']
+                break
+    
+    if state:
+        bot.send_message(
+            message.chat.id,
+            '`COVID-19 Tracker`\n*Number of confirmed cases in %s:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ covid19india.org' % (state, confirmed, deceased, recovered),
+            parse_mode = ParseMode.MARKDOWN,
+            disable_web_page_preview = True
+        )
+    else:
+        bot.send_message(
+            message.chat.id,
+            'You need to specify a valid Indian state!',
+            parse_mode = ParseMode.MARKDOWN,
+            disable_web_page_preview = True
+        )
 
 __help__ = """
 *Admin only:*
