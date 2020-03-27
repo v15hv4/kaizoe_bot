@@ -95,12 +95,36 @@ def greeting(bot: Bot, update: Update):
         'Hey %s! Sup?' % (message.from_user.first_name)
     )
 
+@run_async
+def mock(bot: Bot, update: Update):
+    message = update.effective_message
+    reply = message.reply_to_message
+    mocked_list = []
+    alt_count = 0
+    for char in reply.text:
+        if char == ' ':
+            mocked_list.append(' ')
+        else:
+            if alt_count % 2:
+                mocked_list.append(char.lower())
+            else:
+                mocked_list.append(char.upper())
+            alt_count += 1
+    mocked_message = ''.join(mocked_list)
+    bot.send_message(
+        message.chat.id,
+        mocked_message,
+        reply_to_message_id = reply.message_id
+    )
 
+
+MOCK_HANDLER = CommandHandler('mock', mock)
 DAD_JOKE_HANDLER = CommandHandler('dadjoke', dad_joke)
 BRUH_COUNT_HANDLER = MessageHandler(bruh_filter, bruh)
 WHOMST_HANDLER = MessageHandler(whomst_filter, whomst)
 GREETING_HANDLER = MessageHandler(greeting_filter, greeting)
 
+dispatcher.add_handler(MOCK_HANDLER)
 dispatcher.add_handler(DAD_JOKE_HANDLER)
 dispatcher.add_handler(BRUH_COUNT_HANDLER)
 dispatcher.add_handler(WHOMST_HANDLER)
