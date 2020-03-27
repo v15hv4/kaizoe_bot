@@ -74,6 +74,10 @@ def imdb(bot: Bot, update: Update, args):
         pass
 
 
+__help__ = """
+ - /imdb <movie or TV series name>: View IMDb results for selected movie or TV series
+"""
+
 __mod_name__ = 'IMDb'
 
 IMDB_HANDLER = CommandHandler('imdb', imdb, pass_args=True)
