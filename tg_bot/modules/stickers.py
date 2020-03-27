@@ -6,6 +6,7 @@ import os
 
 from tg_bot import dispatcher
 
+
 @run_async
 def add_sticker(bot: Bot, update: Update):
     message = update.effective_message

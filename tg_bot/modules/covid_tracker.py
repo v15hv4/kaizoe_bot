@@ -81,7 +81,6 @@ def covindia(bot: Bot, update: Update):
         )
 
 __help__ = """
-*Admin only:*
  - /cov <country>: Get real time COVID-19 stats for the input country
  - /covindia <state>: Get real time COVID-19 stats for the input Indian state
 """
