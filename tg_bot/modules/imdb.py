@@ -6,6 +6,7 @@ from tg_bot import dispatcher
 import requests
 from parsel import Selector
 
+import re
 import json
 from urllib.request import urlopen
 
@@ -29,7 +30,8 @@ def imdb_searchdata(bot: Bot, update: Update):
     except:
         date = selector_global.xpath('//div[@class="subtext"]/a/text()').getall()[-1].strip()
     try:
-        synopsis = selector_global.xpath('//div[@class="summary_text"]/text()').get().strip()
+        synopsis_list = selector_global.xpath('//div[@class="summary_text"]/text()').getall()
+        synopsis = re.sub(' +',' ', re.sub(r'\([^)]*\)', '', ''.join(sentence.strip() for sentence in synopsis_list)))
     except:
         synopsis = '_No synopsis available._'
     movie_data = '*%s*, _%s_\n★ *%s*\n\n%s' % (title, date, rating, synopsis)
