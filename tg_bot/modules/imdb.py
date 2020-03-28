@@ -12,12 +12,16 @@ from urllib.request import urlopen
 
 
 def imdb_searchdata(bot: Bot, update: Update):
-    query = update.callback_query
+    query_raw = update.callback_query
+    query = query_raw.data.split('$')
+    print(query)
+    if query[1] != query_raw.from_user.username:
+        return
     title = ''
     rating = ''
     date = ''
     synopsis = ''
-    url_sel = 'https://www.imdb.com/title/%s/' % (query.data)
+    url_sel = 'https://www.imdb.com/title/%s/' % (query[0])
     text_sel = requests.get(url_sel).text
     selector_global = Selector(text = text_sel)
     title = selector_global.xpath('//div[@class="title_wrapper"]/h1/text()').get().strip()
@@ -35,7 +39,7 @@ def imdb_searchdata(bot: Bot, update: Update):
     except:
         synopsis = '_No synopsis available._'
     movie_data = '*%s*, _%s_\n★ *%s*\n\n%s' % (title, date, rating, synopsis)
-    query.edit_message_text(
+    query_raw.edit_message_text(
         movie_data, 
         parse_mode=ParseMode.MARKDOWN
     )
@@ -61,7 +65,7 @@ def imdb(bot: Bot, update: Update, args):
         button_list = [[
                 InlineKeyboardButton(
                     text = str(sugg['l'] + ' (' + str(sugg['y']) + ')'), 
-                    callback_data = str(sugg['id'])
+                    callback_data = str(sugg['id']) + '$' + str(message.from_user.username)
                 )] for sugg in suggs_dict['d'] if 'y' in sugg
         ]
         reply_markup = InlineKeyboardMarkup(button_list)
