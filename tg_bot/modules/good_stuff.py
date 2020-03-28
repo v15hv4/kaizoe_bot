@@ -98,10 +98,15 @@ def greeting(bot: Bot, update: Update):
 @run_async
 def mock(bot: Bot, update: Update):
     message = update.effective_message
-    reply = message.reply_to_message
+    reply = ''.join(word + ' ' for word in message.text.split(' ')[1:])
+    if reply:
+        reply_id = False
+    else:
+        reply = message.reply_to_message.text
+        reply_id = message.reply_to_message.message_id
     mocked_list = []
     alt_count = 0
-    for char in reply.text:
+    for char in reply:
         if char == ' ':
             mocked_list.append(' ')
         else:
@@ -114,7 +119,7 @@ def mock(bot: Bot, update: Update):
     bot.send_message(
         message.chat.id,
         mocked_message,
-        reply_to_message_id = reply.message_id
+        reply_to_message_id = reply_id
     )
 
 
