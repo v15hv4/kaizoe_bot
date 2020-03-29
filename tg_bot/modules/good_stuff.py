@@ -6,6 +6,8 @@ import urllib.request, json, random
 from tg_bot import dispatcher
 from tg_bot.modules.sql import bruh_sql as sql
 
+import random
+
 
 class BruhFilter(BaseFilter):
     def filter(self, message):
@@ -41,6 +43,13 @@ class GreetingFilter(BaseFilter):
 
 greeting_filter = GreetingFilter()
 
+class DieFilter(BaseFilter):
+    def filter(self,message):
+        if message.text:
+            if 'kaizoe' in message.text.lower() and 'die' in message.text.lower():
+                return True
+
+die_filter = DieFilter()
 
 @run_async
 def dad_joke(bot: Bot, update: Update):
@@ -86,6 +95,25 @@ def whomst(bot: Bot, update: Update):
         'ur mom lmao'
     )
 
+@run_async
+def die(bot: Bot, update: Update):
+    message = update.effective_message
+    message.reply_text(
+        'Go fuck yourself nigga!'
+       )
+
+@run_async
+def fcoin(bot: Bot, update: Update):
+    message = update.effective_message
+    res = random.randint(0,1)
+    m = 'shit'
+    if(res==1):
+        m = 'tails.'
+    else:
+        m = 'heads.'
+    message.reply_text(
+        'Its %s' % (m)
+    )
 
 @run_async
 def greeting(bot: Bot, update: Update):
@@ -124,12 +152,16 @@ def mock(bot: Bot, update: Update):
 
 
 MOCK_HANDLER = CommandHandler('mock', mock)
+FLIPCOIN_HANDLER = CommandHandler('fcoin',fcoin)
 DAD_JOKE_HANDLER = CommandHandler('dadjoke', dad_joke)
 BRUH_COUNT_HANDLER = MessageHandler(bruh_filter, bruh)
 WHOMST_HANDLER = MessageHandler(whomst_filter, whomst)
 GREETING_HANDLER = MessageHandler(greeting_filter, greeting)
+DIE_HANDLER = MessageHandler(die_filter, die)
 
 dispatcher.add_handler(MOCK_HANDLER)
+dispatcher.add_handler(DIE_HANDLER)
+dispatcher.add_handler(FLIPCOIN_HANDLER)
 dispatcher.add_handler(DAD_JOKE_HANDLER)
 dispatcher.add_handler(BRUH_COUNT_HANDLER)
 dispatcher.add_handler(WHOMST_HANDLER)
