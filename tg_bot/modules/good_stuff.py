@@ -43,6 +43,13 @@ class GreetingFilter(BaseFilter):
 
 greeting_filter = GreetingFilter()
 
+class DieFilter(BaseFilter):
+    def filter(self,message):
+        if message.text:
+            if 'kaizoe' in message.text.lower() and 'die' in message.text.lower():
+                return True
+
+die_filter = DieFilter()
 
 @run_async
 def dad_joke(bot: Bot, update: Update):
@@ -91,10 +98,9 @@ def whomst(bot: Bot, update: Update):
 @run_async
 def die(bot: Bot, update: Update):
     message = update.effective_message
-
     message.reply_text(
         'Go fuck yourself nigga!'
-    )
+       )
 
 @run_async
 def fcoin(bot: Bot, update: Update):
@@ -146,12 +152,12 @@ def mock(bot: Bot, update: Update):
 
 
 MOCK_HANDLER = CommandHandler('mock', mock)
-DIE_HANDLER = CommandHandler('die', die)
 FLIPCOIN_HANDLER = CommandHandler('fcoin',fcoin)
 DAD_JOKE_HANDLER = CommandHandler('dadjoke', dad_joke)
 BRUH_COUNT_HANDLER = MessageHandler(bruh_filter, bruh)
 WHOMST_HANDLER = MessageHandler(whomst_filter, whomst)
 GREETING_HANDLER = MessageHandler(greeting_filter, greeting)
+DIE_HANDLER = MessageHandler(die_filter, die)
 
 dispatcher.add_handler(MOCK_HANDLER)
 dispatcher.add_handler(DIE_HANDLER)
