@@ -36,12 +36,19 @@ def cov(bot: Bot, update: Update):
             country = gdict['country'].replace('-', ' ')
             break
 
-    if country_input.lower() == 'all':
-        country_input = 'global'
+    if country.lower() == 'all':
+        country = 'global'
+    elif not country:
+        country = country_input
 
     bot.send_message(
         message.chat.id,
-        '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ api-sports.io' % (country, confirmed, deceased, recovered),
+        '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ api-sports.io' % (
+            country.upper(),
+            format(int(confirmed), ',d'), 
+            format(int(deceased), ',d'),
+            format(int(recovered), ',d')
+        ),
         parse_mode = ParseMode.MARKDOWN,
         disable_web_page_preview = True
     )
@@ -68,7 +75,12 @@ def covindia(bot: Bot, update: Update):
     if state:
         bot.send_message(
             message.chat.id,
-            '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ covid19india.org' % (state, confirmed, deceased, recovered),
+            '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ covid19india.org' % (
+                state.upper(),
+                format(int(confirmed), ',d'),
+                format(int(deceased), ',d'),
+                format(int(recovered), ',d')
+            ),
             parse_mode = ParseMode.MARKDOWN,
             disable_web_page_preview = True
         )
