@@ -2,15 +2,18 @@ from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, MessageHandler, BaseFilter, run_async
 
 from tg_bot import dispatcher
+from tg_bot.config import Development as Config
 
 import requests
 from parsel import Selector
 
+import os
 import json
 from urllib.request import urlopen
 
-import pprint
-
+COVID_193_API_KEY = os.environ.get('COVID193_TOKEN')
+if not COVID_193_API_KEY:
+    COVID_193_API_KEY = Config.COVID_193_API_KEY
 
 def cov(bot: Bot, update: Update):
     message = update.effective_message
@@ -27,7 +30,7 @@ def cov(bot: Bot, update: Update):
     url_global = "https://covid-193.p.rapidapi.com/statistics"
     headers = {
         'x-rapidapi-host': "covid-193.p.rapidapi.com",
-        'x-rapidapi-key': "f0e32f8badmsh0b2fa1d896283f6p1a3cc4jsnd24d74fcd0b2"
+        'x-rapidapi-key': COVID_193_API_KEY
     }
     json_response = requests.get(url_global, headers = headers)
     global_dict = json.loads(json_response.text)
