@@ -57,7 +57,7 @@ if ENV:
     WORKERS = int(os.environ.get('WORKERS', 8))
     BAN_STICKER = os.environ.get('BAN_STICKER', 'CAADAgADOwADPPEcAXkko5EB3YGYAg')
     ALLOW_EXCL = os.environ.get('ALLOW_EXCL', False)
-    COVID_193_API_KEY = os.environ.get('COVID193_TOKEN')
+    COVID_193_API_KEY = os.environ.get('COVID_193_API_KEY')
 
 else:
     from tg_bot.config import Development as Config
