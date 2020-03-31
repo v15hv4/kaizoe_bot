@@ -9,9 +9,13 @@ from parsel import Selector
 import json
 from urllib.request import urlopen
 
+import pprint
+
+
 def cov(bot: Bot, update: Update):
     message = update.effective_message
     country = ''
+    new = 0
     confirmed = 0
     deceased = 0
     recovered = 0
@@ -30,6 +34,7 @@ def cov(bot: Bot, update: Update):
     
     for gdict in global_dict['response']:
         if gdict['country'].lower().replace('-', ' ') == country_input.lower():
+            new = gdict['cases']['new'][1:]
             confirmed = gdict['cases']['total']
             deceased = gdict['deaths']['total']
             recovered = gdict['cases']['recovered']
@@ -43,9 +48,10 @@ def cov(bot: Bot, update: Update):
 
     bot.send_message(
         message.chat.id,
-        '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ api-sports.io' % (
+        '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s   _(+%s in the past 24 hrs)_\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ api-sports.io' % (
             country.upper(),
-            format(int(confirmed), ',d'), 
+            format(int(confirmed), ',d'),
+            format(int(new), ',d'),
             format(int(deceased), ',d'),
             format(int(recovered), ',d')
         ),
@@ -53,9 +59,11 @@ def cov(bot: Bot, update: Update):
         disable_web_page_preview = True
     )
 
+
 def covindia(bot: Bot, update: Update):
     message = update.effective_message
     state = ''
+    new = 0
     confirmed = 0
     deceased = 0
     recovered = 0
@@ -66,6 +74,7 @@ def covindia(bot: Bot, update: Update):
         state_dict = json.loads(json_url.read())
         for sdict in state_dict['statewise']:
             if sdict['state'].lower() == state_input.lower():
+                new = sdict['delta']['confirmed']
                 confirmed = sdict['confirmed']
                 deceased = sdict['deaths']
                 recovered = sdict['recovered']
@@ -75,9 +84,10 @@ def covindia(bot: Bot, update: Update):
     if state:
         bot.send_message(
             message.chat.id,
-            '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ covid19india.org' % (
+            '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s   _(+%s in the past 24 hrs)_\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ covid19india.org' % (
                 state.upper(),
                 format(int(confirmed), ',d'),
+                format(int(new), ',d'),
                 format(int(deceased), ',d'),
                 format(int(recovered), ',d')
             ),
@@ -89,6 +99,7 @@ def covindia(bot: Bot, update: Update):
             message.chat.id,
             'You need to specify a valid Indian state!'
         )
+
 
 __help__ = """
  - /cov <country>: Get real time COVID-19 stats for the input country
