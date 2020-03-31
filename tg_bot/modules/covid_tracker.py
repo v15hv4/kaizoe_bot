@@ -2,7 +2,7 @@ from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, MessageHandler, BaseFilter, run_async
 
 from tg_bot import dispatcher
-from tg_bot.config import Development as Config
+from tg_bot import COVID_193_API_KEY
 
 import requests
 from parsel import Selector
@@ -11,9 +11,6 @@ import os
 import json
 from urllib.request import urlopen
 
-COVID_193_API_KEY = os.environ.get('COVID193_TOKEN')
-if not COVID_193_API_KEY:
-    COVID_193_API_KEY = Config.COVID_193_API_KEY
 
 def cov(bot: Bot, update: Update):
     message = update.effective_message
