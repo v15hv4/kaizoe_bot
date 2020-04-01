@@ -32,6 +32,32 @@ def cov(bot: Bot, update: Update):
     json_response = requests.get(url_global, headers = headers)
     global_dict = json.loads(json_response.text)
     
+    if country_input.lower()[:3] == 'top':
+        try:
+            n = int(country_input.lower()[3:])
+            name_list = []
+            conf_list = []
+            for i in range(0, n):
+                name_list.append(global_dict['response'][i]['country'].replace('-', ' '))
+                conf_list.append(global_dict['response'][i]['cases']['total'])
+            out_list = ''
+            for i in range(0, n):
+                out_list += '%s\t\t%s\n' % (name_list[i], format(int(conf_list[i]), ',d'))
+            bot.send_message(
+                message.chat.id,
+                '`COVID-19 Tracker:`\n\n' + out_list + '\n\n_Source:_ api-sports.io',
+                parse_mode = ParseMode.MARKDOWN,
+                disable_web_page_preview = True
+            )
+            return
+        except:
+            bot.send_message(
+                message.chat.id,
+                'Invalid argument!'
+            )
+            return
+
+
     for gdict in global_dict['response']:
         if gdict['country'].lower().replace('-', ' ') == country_input.lower():
             new = gdict['cases']['new'][1:]
