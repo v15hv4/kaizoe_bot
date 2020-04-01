@@ -9,6 +9,7 @@ from parsel import Selector
 
 import os
 import json
+from tabulate import tabulate
 from urllib.request import urlopen
 
 
@@ -33,19 +34,20 @@ def cov(bot: Bot, update: Update):
     global_dict = json.loads(json_response.text)
     
     if country_input.lower()[:3] == 'top':
+        sorted_dict = sorted(global_dict['response'], key = lambda gdict: int(gdict['cases']['total']), reverse = True)[1:]
         try:
-            n = int(country_input.lower()[3:])
-            name_list = []
-            conf_list = []
+            n = int(country_input.lower()[3:].strip())
+            country_list = []
             for i in range(0, n):
-                name_list.append(global_dict['response'][i]['country'].replace('-', ' '))
-                conf_list.append(global_dict['response'][i]['cases']['total'])
-            out_list = ''
-            for i in range(0, n):
-                out_list += '%s\t\t%s\n' % (name_list[i], format(int(conf_list[i]), ',d'))
+                country_list.append([
+                    str(i + 1),
+                    sorted_dict[i]['country'].replace('-', ' '),
+                    format(int(sorted_dict[i]['cases']['total']), ',d')
+                ])
+            out_list = str(tabulate(country_list, tablefmt = "plain"))
             bot.send_message(
                 message.chat.id,
-                '`COVID-19 Tracker:`\n\n' + out_list + '\n\n_Source:_ api-sports.io',
+                '`COVID-19 Tracker:` *ALL*\n\n`%s`\n\n_Source:_ api-sports.io' % (out_list),
                 parse_mode = ParseMode.MARKDOWN,
                 disable_web_page_preview = True
             )
