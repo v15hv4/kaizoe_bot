@@ -131,6 +131,7 @@ def covindia(bot: Bot, update: Update):
 
 __help__ = """
  - /cov <country>: Get real time COVID-19 stats for the input country
+ - /cov top <n(integer)>: Get the top n countries with the highest confirmed cases.
  - /covindia <state>: Get real time COVID-19 stats for the input Indian state
 """
 
