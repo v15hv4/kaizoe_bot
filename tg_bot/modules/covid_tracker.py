@@ -12,7 +12,6 @@ import json
 from tabulate import tabulate
 from urllib.request import urlopen
 
-
 def cov(bot: Bot, update: Update):
     message = update.effective_message
     country = ''
@@ -40,7 +39,7 @@ def cov(bot: Bot, update: Update):
             country_list = []
             for i in range(0, n):
                 country_list.append([
-                    str(i + 1),
+                    str(i),
                     sorted_dict[i]['country'].replace('-', ' '),
                     format(int(sorted_dict[i]['cases']['total']), ',d')
                 ])
@@ -102,7 +101,7 @@ def covindia(bot: Bot, update: Update):
         state_dict = json.loads(json_url.read())
         for sdict in state_dict['statewise']:
             if sdict['state'].lower() == state_input.lower():
-                new = sdict['delta']['confirmed']
+                new = sdict['deltaconfirmed']
                 confirmed = sdict['confirmed']
                 deceased = sdict['deaths']
                 recovered = sdict['recovered']
