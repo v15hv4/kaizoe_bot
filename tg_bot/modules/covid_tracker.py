@@ -14,6 +14,8 @@ from urllib.request import urlopen
 
 def cov(bot: Bot, update: Update):
     message = update.effective_message
+    d_title = ''
+    d_key = ''
     country = ''
     new = 0
     confirmed = 0
@@ -33,20 +35,29 @@ def cov(bot: Bot, update: Update):
     global_dict = json.loads(json_response.text)
     
     if country_input.lower()[:3] == 'top':
-        sorted_dict = sorted(global_dict['response'], key = lambda gdict: int(gdict['cases']['total']), reverse = True)[1:]
+        if country_input.lower()[-1] == 'd':
+            d_title = 'DECEASED'
+            d_key = 'deaths'
+        else:
+            d_title = 'CONFIRMED'
+            d_key = 'cases'
         try:
-            n = int(country_input.lower()[3:].strip())
+            sorted_dict = sorted(global_dict['response'], key = lambda gdict: int(gdict[d_key]['total']), reverse = True)[1:]
+            n = country_input.lower()[3:].strip()
+            if n[-1].isalpha():
+                n = n[:-1]
+            n = int(n.strip()) + 1
             country_list = []
             for i in range(0, n):
                 country_list.append([
                     str(i),
                     sorted_dict[i]['country'].replace('-', ' '),
-                    format(int(sorted_dict[i]['cases']['total']), ',d')
+                    format(int(sorted_dict[i][d_key]['total']), ',d')
                 ])
             out_list = str(tabulate(country_list, tablefmt = "plain"))
             bot.send_message(
                 message.chat.id,
-                '`COVID-19 Tracker:` *ALL*\n\n`%s`\n\n_Source:_ api-sports.io' % (out_list),
+                '`COVID-19 Tracker:` *%s*\n\n`%s`\n\n_Source:_ api-sports.io' % (d_title, out_list),
                 parse_mode = ParseMode.MARKDOWN,
                 disable_web_page_preview = True
             )
