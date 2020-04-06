@@ -38,11 +38,17 @@ def cov(bot: Bot, update: Update):
         if country_input.lower()[-1] == 'd':
             d_title = 'DECEASED'
             d_key = 'deaths'
+            d_subkey = 'total'
+        elif country_input.lower()[-1] == 'r':
+            d_title = 'RECOVERED'
+            d_key = 'cases'
+            d_subkey = 'recovered'
         else:
             d_title = 'CONFIRMED'
             d_key = 'cases'
+            d_subkey = 'total'
         try:
-            sorted_dict = sorted(global_dict['response'], key = lambda gdict: int(gdict[d_key]['total']), reverse = True)[1:]
+            sorted_dict = sorted(global_dict['response'], key = lambda gdict: int(gdict[d_key][d_subkey]), reverse = True)[1:]
             n = country_input.lower()[3:].strip()
             if n[-1].isalpha():
                 n = n[:-1]
@@ -52,7 +58,7 @@ def cov(bot: Bot, update: Update):
                 country_list.append([
                     str(i),
                     sorted_dict[i]['country'].replace('-', ' '),
-                    format(int(sorted_dict[i][d_key]['total']), ',d')
+                    format(int(sorted_dict[i][d_key][d_subkey]), ',d')
                 ])
             out_list = str(tabulate(country_list, tablefmt = "plain"))
             bot.send_message(
