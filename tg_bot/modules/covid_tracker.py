@@ -12,6 +12,7 @@ import json
 from tabulate import tabulate
 from urllib.request import urlopen
 
+
 def cov(bot: Bot, update: Update):
     message = update.effective_message
     d_title = ''
@@ -48,17 +49,32 @@ def cov(bot: Bot, update: Update):
             d_key = 'cases'
             d_subkey = 'total'
         try:
-            sorted_dict = sorted(global_dict['response'], key = lambda gdict: int(gdict[d_key][d_subkey]), reverse = True)[1:]
+            continent_list = [
+                'asia',
+                'north america',
+                'south america',
+                'oceania',
+                'europe',
+                'antarctica',
+                'africa'
+            ]
+            sorted_raw = sorted(global_dict['response'], key = lambda gdict: int(gdict[d_key][d_subkey]), reverse = True)[1:]   
+            sorted_list = [
+                sorted_raw[i] for i in range(len(sorted_raw)) 
+                if sorted_raw[i]['country'].replace('-', ' ').strip().lower() not in continent_list
+            ]
+
             n = country_input.lower()[3:].strip()
             if n[-1].isalpha():
                 n = n[:-1]
             n = int(n.strip()) + 1
+
             country_list = []
             for i in range(0, n):
                 country_list.append([
                     str(i),
-                    sorted_dict[i]['country'].replace('-', ' '),
-                    format(int(sorted_dict[i][d_key][d_subkey]), ',d')
+                    sorted_list[i]['country'].replace('-', ' '),
+                    format(int(sorted_list[i][d_key][d_subkey]), ',d')
                 ])
             out_list = str(tabulate(country_list, tablefmt = "plain"))
             bot.send_message(
