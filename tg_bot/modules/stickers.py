@@ -12,7 +12,14 @@ def add_sticker(bot: Bot, update: Update):
     message = update.effective_message
     user = update.effective_user
     chat = update.effective_chat
-    set_name = 'pack_' + str(chat.id)[1:] + '_by_' + bot.username
+    try:
+        args = message.text.split(' ')[1]
+    except:
+        args = 'personal'
+    if args.lower() == 'group':
+        set_name = 'pack_' + str(chat.id)[1:] + '_by_' + bot.username
+    else:
+        set_name = 'pack_' + str(user.id)[1:] + '_by_' + bot.username
     if message.reply_to_message.sticker:
         file_id = message.reply_to_message.sticker.file_id
         sticker_file = bot.get_file(file_id)
@@ -22,15 +29,11 @@ def add_sticker(bot: Bot, update: Update):
         sticker_file = bot.get_file(file_id)
         sticker_file.download('sticker_input.png')
         sticker = Image.open('sticker_input.png')
-        print(sticker.width, sticker.height)
         if sticker.width < 512 and sticker.height < 512:
-            print('what the fuck')
             if sticker.width < sticker.height:
-                print('what the fuck 2')
                 asp_ratio = sticker.width / sticker.height
                 sticker = sticker.resize((ceil(asp_ratio * 512), 512))
             else:
-                print('what the fuck 3')
                 asp_ratio = sticker.height / sticker.width
                 sticker = sticker.resize((512, ceil(asp_ratio * 512)))
         else:
@@ -59,7 +62,10 @@ def add_sticker(bot: Bot, update: Update):
                 reply_to_message_id = message.reply_to_message.message_id
             )
     except:
-        set_title = str(chat.title) + ' Stickers'
+        if args.lower() == 'group':
+            set_title = str(chat.title) + ' Stickers'
+        else:
+            set_title = str(user.username) + '\'s Stickers'
         set_created = bot.create_new_sticker_set(
             user.id,
             set_name,
