@@ -22,6 +22,8 @@ def cov(bot: Bot, update: Update):
     confirmed = 0
     deceased = 0
     recovered = 0
+    m_rate = 0
+    r_rate = 0
     country_input = ''.join([message.text.split(' ')[i] + ' ' for i in range(1, len(message.text.split(' ')))]).strip()
 
     if not country_input:
@@ -94,11 +96,13 @@ def cov(bot: Bot, update: Update):
 
     for gdict in global_dict['response']:
         if gdict['country'].lower().replace('-', ' ') == country_input.lower():
-            new = gdict['cases']['new'][1:]
-            confirmed = gdict['cases']['total']
-            deceased = gdict['deaths']['total']
-            recovered = gdict['cases']['recovered']
+            new = int(gdict['cases']['new'][1:])
+            confirmed = int(gdict['cases']['total'])
+            deceased = int(gdict['deaths']['total'])
+            recovered = int(gdict['cases']['recovered'])
             country = gdict['country'].replace('-', ' ')
+            m_rate = (100 * deceased / confirmed)
+            r_rate = (100 * recovered / confirmed)
             break
 
     if country.lower() == 'all':
@@ -108,13 +112,13 @@ def cov(bot: Bot, update: Update):
 
     bot.send_message(
         message.chat.id,
-        '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s   _(+%s in the past 24 hrs)_\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ api-sports.io' % (
-            country.upper(),
-            format(int(confirmed), ',d'),
-            format(int(new), ',d'),
-            format(int(deceased), ',d'),
-            format(int(recovered), ',d')
-        ),
+        '`COVID-19 Tracker:` *%s*\n\n' % country.upper() +
+        '*Confirmed:* %s   _(+%s in the past 24 hrs)_\n' % (format(confirmed, ',d'), format(new, ',d')) +
+        '*Deceased:* %s\n' % format(deceased, ',d') +
+        '*Recovered:* %s\n\n' % format(recovered, ',d') +
+        '*Mortality rate:* %s%%\n' % round(m_rate, 2) +
+        '*Recovery rate:* %s%%\n\n' % round(r_rate, 2) +
+        '_Source:_ api-sports.io',
         parse_mode = ParseMode.MARKDOWN,
         disable_web_page_preview = True
     )
@@ -127,6 +131,8 @@ def covindia(bot: Bot, update: Update):
     confirmed = 0
     deceased = 0
     recovered = 0
+    m_rate = 0
+    r_rate = 0
     state_input = ''.join([message.text.split(' ')[i] + ' ' for i in range(1, len(message.text.split(' ')))]).strip()
     if state_input:
         url_india = 'https://api.covid19india.org/data.json'
@@ -134,23 +140,25 @@ def covindia(bot: Bot, update: Update):
         state_dict = json.loads(json_url.read())
         for sdict in state_dict['statewise']:
             if sdict['state'].lower() == state_input.lower():
-                new = sdict['deltaconfirmed']
-                confirmed = sdict['confirmed']
-                deceased = sdict['deaths']
-                recovered = sdict['recovered']
+                new = int(sdict['deltaconfirmed'])
+                confirmed = int(sdict['confirmed'])
+                deceased = int(sdict['deaths'])
+                recovered = int(sdict['recovered'])
                 state = sdict['state']
+                m_rate = (100 * deceased / confirmed)
+                r_rate = (100 * recovered / confirmed)
                 break
     
     if state:
         bot.send_message(
             message.chat.id,
-            '`COVID-19 Tracker:` *%s*\n\n*Confirmed:* %s   _(+%s in the past 24 hrs)_\n*Deceased:* %s\n*Recovered:* %s\n\n_Source:_ covid19india.org' % (
-                state.upper(),
-                format(int(confirmed), ',d'),
-                format(int(new), ',d'),
-                format(int(deceased), ',d'),
-                format(int(recovered), ',d')
-            ),
+            '`COVID-19 Tracker:` *%s*\n\n' % state.upper() +
+            '*Confirmed:* %s   _(+%s in the past 24 hrs)_\n' % (format(confirmed, ',d'), format(new, ',d')) +
+            '*Deceased:* %s\n' % format(deceased, ',d') +
+            '*Recovered:* %s\n\n' % format(recovered, ',d') +
+            '*Mortality rate:* %s%%\n' % round(m_rate, 2) +
+            '*Recovery rate:* %s%%\n\n' % round(r_rate, 2) +
+            '_Source:_ covid19india.org',
             parse_mode = ParseMode.MARKDOWN,
             disable_web_page_preview = True
         )
