@@ -83,6 +83,10 @@ def add_sticker(bot: Bot, update: Update):
 
     os.remove('sticker_input.png')
 
+__help__ = """
+ - <reply> /addsticker personal: Add replied-to sticker to your personal pack (Default)
+ - <reply> /addsticker group: Add replied-to sticker to current group's pack
+"""
 
 __mod_name__ = 'Stickers'
 
