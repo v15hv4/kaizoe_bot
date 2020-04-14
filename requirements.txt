@@ -8,3 +8,4 @@ feedparser
 Pillow
 parsel
 tabulate
+youtube-dl
