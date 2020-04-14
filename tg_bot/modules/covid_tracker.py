@@ -2,7 +2,6 @@ from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, MessageHandler, BaseFilter, run_async
 
 from tg_bot import dispatcher
-from tg_bot import COVID_193_API_KEY
 
 import os
 import json

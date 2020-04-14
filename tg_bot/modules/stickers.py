@@ -1,5 +1,7 @@
 from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, run_async
+from tg_bot import UNIV_STICKER_OWNER_ID
+from telegram.error import RetryAfter
 from PIL import Image
 from math import ceil
 import os
@@ -39,7 +41,6 @@ def add_sticker(bot: Bot, update: Update):
         else:
             sticker.thumbnail((512, 512))
         sticker.save('sticker_input.png')
-        print(sticker.width, sticker.height)
     else:
         message.reply_text('bruh')
         return
@@ -49,8 +50,8 @@ def add_sticker(bot: Bot, update: Update):
     try:
         set_target = bot.get_sticker_set(set_name)
         sticker_added = bot.add_sticker_to_set(
-            user.id,
-            set_name,
+            user_id = user.id,
+            name = set_name,
             png_sticker = open(sticker_target, 'rb'),
             emojis = sticker_emoji
         )
@@ -61,18 +62,32 @@ def add_sticker(bot: Bot, update: Update):
                 parse_mode = ParseMode.MARKDOWN,
                 reply_to_message_id = message.reply_to_message.message_id
             )
+    except RetryAfter:
+        bot.send_message(
+            message.chat.id,
+            'Slow down! Try again in 10 seconds.'
+        )
     except:
         if args.lower() == 'group':
             set_title = str(chat.title) + ' Stickers'
         else:
             set_title = str(user.username) + '\'s Stickers'
-        set_created = bot.create_new_sticker_set(
-            user.id,
-            set_name,
-            set_title,
-            png_sticker = open(sticker_target, 'rb'),
-            emojis = sticker_emoji
-        )
+        try:
+            set_created = bot.create_new_sticker_set(
+                user_id = user.id,
+                name = set_name,
+                title = set_title,
+                png_sticker = open(sticker_target, 'rb'),
+                emojis = sticker_emoji
+            )
+        except:
+            set_created = bot.create_new_sticker_set(
+                user_id = UNIV_STICKER_OWNER_ID,
+                name = set_name,
+                title = set_title,
+                png_sticker = open(sticker_target, 'rb'),
+                emojis = sticker_emoji
+            )
         if set_created:
             bot.send_message(
                 message.chat.id,

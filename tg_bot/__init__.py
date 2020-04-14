@@ -57,7 +57,7 @@ if ENV:
     WORKERS = int(os.environ.get('WORKERS', 8))
     BAN_STICKER = os.environ.get('BAN_STICKER', 'CAADAgADOwADPPEcAXkko5EB3YGYAg')
     ALLOW_EXCL = os.environ.get('ALLOW_EXCL', False)
-    COVID_193_API_KEY = os.environ.get('COVID_193_API_KEY')
+    UNIV_STICKER_OWNER_ID = os.environ.get('UNIV_STICKER_OWNER_ID')
 
 else:
     from tg_bot.config import Development as Config
@@ -99,7 +99,7 @@ else:
     WORKERS = Config.WORKERS
     BAN_STICKER = Config.BAN_STICKER
     ALLOW_EXCL = Config.ALLOW_EXCL
-    COVID_193_API_KEY = Config.COVID_193_API_KEY
+    UNIV_STICKER_OWNER_ID = Config.UNIV_STICKER_OWNER_ID
 
 
 SUDO_USERS.add(OWNER_ID)
