@@ -1,32 +1,18 @@
 from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, MessageHandler, BaseFilter, run_async
 
-import urllib.request, json, random
+import urllib.request, json, random, requests, re
 
 from tg_bot import dispatcher
 from tg_bot.modules.sql import bruh_sql as sql
-
-import random
 
 
 class BruhFilter(BaseFilter):
     def filter(self, message):
         if message.text:
             return message.text.lower() == 'bruh' or message.text.lower() == 'bruh moment'
-        elif message.sticker:
-            return message.sticker.file_id[-26:] == 'AAL9AAPUg2ggEepgeyH76-YYBA'
 
 bruh_filter = BruhFilter()
-
-
-class WhomstFilter(BaseFilter):
-    def filter(self, message):
-        if message.text:
-            if 'kaizoe' in message.text.lower():
-                if ('who' in message.text.lower() or 'what' in message.text.lower()):
-                    return True
-
-whomst_filter = WhomstFilter()
 
 
 class GreetingFilter(BaseFilter):
@@ -43,13 +29,6 @@ class GreetingFilter(BaseFilter):
 
 greeting_filter = GreetingFilter()
 
-class DieFilter(BaseFilter):
-    def filter(self,message):
-        if message.text:
-            if 'kaizoe' in message.text.lower() and 'die' in message.text.lower():
-                return True
-
-die_filter = DieFilter()
 
 @run_async
 def dad_joke(bot: Bot, update: Update):
@@ -85,22 +64,6 @@ def bruh(bot: Bot, update: Update):
         'A bruh moment has been reported.\n\n`Total bruh moments in this chat so far: %d`' % (int(bruh_count)),
         parse_mode = ParseMode.MARKDOWN
     )
-
-
-@run_async
-def whomst(bot: Bot, update: Update):
-    message = update.effective_message
-
-    message.reply_text(
-        'ur mom lmao'
-    )
-
-@run_async
-def die(bot: Bot, update: Update):
-    message = update.effective_message
-    message.reply_text(
-        'Go fuck yourself nigga!'
-       )
 
 @run_async
 def fcoin(bot: Bot, update: Update):
@@ -150,19 +113,45 @@ def mock(bot: Bot, update: Update):
         reply_to_message_id = reply_id
     )
 
+@run_async
+def define(bot: Bot, update: Update):
+    message = update.effective_message
+    query = {'term' : ''.join(message.text.split(' ')[1:]).strip()}
+    ud_url = 'https://mashape-community-urban-dictionary.p.rapidapi.com/define'
+    headers = {
+        'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com",
+        'x-rapidapi-key': "f0e32f8badmsh0b2fa1d896283f6p1a3cc4jsnd24d74fcd0b2"
+    }
+    try:
+        response = requests.request('GET', ud_url, headers = headers, params = query)
+        response_dict = json.loads(response.text)
+        topdef = response_dict['list'][0]
+        message.reply_text(
+            '[%s:](%s)\n\n%s\n\n_%s_' % (
+                topdef['word'],
+                topdef['permalink'],
+                re.sub('[\[\]]', '', topdef['definition']),
+                re.sub('[\[\]]', '', topdef['example'])
+            ),
+            parse_mode = ParseMode.MARKDOWN,
+            disable_web_page_preview = True
+        )
+    except:
+        message.reply_text(
+            '¯\_(ツ)_/¯'
+        )
 
+
+DEFINE_HANDLER = CommandHandler('define', define)
 MOCK_HANDLER = CommandHandler('mock', mock)
 FLIPCOIN_HANDLER = CommandHandler('fcoin',fcoin)
 DAD_JOKE_HANDLER = CommandHandler('dadjoke', dad_joke)
 BRUH_COUNT_HANDLER = MessageHandler(bruh_filter, bruh)
-WHOMST_HANDLER = MessageHandler(whomst_filter, whomst)
 GREETING_HANDLER = MessageHandler(greeting_filter, greeting)
-DIE_HANDLER = MessageHandler(die_filter, die)
 
+dispatcher.add_handler(DEFINE_HANDLER)
 dispatcher.add_handler(MOCK_HANDLER)
-dispatcher.add_handler(DIE_HANDLER)
 dispatcher.add_handler(FLIPCOIN_HANDLER)
 dispatcher.add_handler(DAD_JOKE_HANDLER)
 dispatcher.add_handler(BRUH_COUNT_HANDLER)
-dispatcher.add_handler(WHOMST_HANDLER)
 dispatcher.add_handler(GREETING_HANDLER)
