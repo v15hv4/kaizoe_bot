@@ -63,6 +63,10 @@ def ytdl(bot: Bot, update: Update):
         )
         return
 
+__help__ = """
+ - /ytdl <link>: Download audio from the YouTube link provided
+"""
+
 __mod_name__ = 'YouTube Audio Downloader'
 
 YTDL_HANDLER = CommandHandler('ytdl', ytdl)
