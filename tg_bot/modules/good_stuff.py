@@ -1,6 +1,7 @@
 from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, MessageHandler, BaseFilter, run_async
 
+from zalgo_text import zalgo
 import urllib.request, json, random, requests, re
 
 from tg_bot import dispatcher
@@ -141,10 +142,26 @@ def define(bot: Bot, update: Update):
             '¯\_(ツ)_/¯'
         )
 
+@run_async
+def zalgofy(bot: Bot, update: Update):
+    message = update.effective_message
+    reply = ''.join(word + ' ' for word in message.text.split(' ')[1:])
+    if reply:
+        reply_id = False
+    else:
+        reply = message.reply_to_message.text
+        reply_id = message.reply_to_message.message_id
+    cursed_message = zalgo.zalgo().zalgofy(reply)
+    bot.send_message(
+        message.chat.id,
+        cursed_message,
+        reply_to_message_id = reply_id
+    )
 
 DEFINE_HANDLER = CommandHandler('define', define)
 MOCK_HANDLER = CommandHandler('mock', mock)
 FLIPCOIN_HANDLER = CommandHandler('fcoin',fcoin)
+ZALGOFY_HANDLER = CommandHandler('zalgofy', zalgofy)
 DAD_JOKE_HANDLER = CommandHandler('dadjoke', dad_joke)
 BRUH_COUNT_HANDLER = MessageHandler(bruh_filter, bruh)
 GREETING_HANDLER = MessageHandler(greeting_filter, greeting)
@@ -152,6 +169,7 @@ GREETING_HANDLER = MessageHandler(greeting_filter, greeting)
 dispatcher.add_handler(DEFINE_HANDLER)
 dispatcher.add_handler(MOCK_HANDLER)
 dispatcher.add_handler(FLIPCOIN_HANDLER)
+dispatcher.add_handler(ZALGOFY_HANDLER)
 dispatcher.add_handler(DAD_JOKE_HANDLER)
 dispatcher.add_handler(BRUH_COUNT_HANDLER)
 dispatcher.add_handler(GREETING_HANDLER)
