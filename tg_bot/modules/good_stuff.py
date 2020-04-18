@@ -117,7 +117,7 @@ def mock(bot: Bot, update: Update):
 @run_async
 def define(bot: Bot, update: Update):
     message = update.effective_message
-    query = {'term' : ''.join(message.text.split(' ')[1:]).strip()}
+    query = {'term' : ''.join([word + ' ' for word in message.text.split(' ')[1:]]).strip()}
     ud_url = 'https://mashape-community-urban-dictionary.p.rapidapi.com/define'
     headers = {
         'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com",
