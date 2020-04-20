@@ -10,3 +10,4 @@ parsel
 tabulate
 youtube-dl
 zalgo_text
+numexpr
