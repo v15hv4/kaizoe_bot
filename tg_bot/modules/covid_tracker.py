@@ -9,7 +9,14 @@ import requests
 from tabulate import tabulate
 from urllib.request import urlopen
 
+def sign_delta(delta_var):
+    if delta_var < 0:
+        delta_var = str(format(delta_var, ',d'))
+    else:
+        delta_var = '+' + str(format(delta_var, ',d'))
+    return delta_var
 
+@run_async
 def cov(bot: Bot, update: Update):
     message = update.effective_message
     confirmed = 0
@@ -82,10 +89,10 @@ def cov(bot: Bot, update: Update):
         bot.send_message(
             message.chat.id,
             '`COVID-19 Tracker:` *%s*\n\n' % location.upper() +
-            '*Confirmed:* %s _(+%s)_\n' % (format(confirmed, ',d'), format(confirmed_delta, ',d')) +
-            '*Active:* %s _(+%s)_\n' % (format(active, ',d'), format(active_delta, ',d')) +
-            '*Deceased:* %s _(+%s)_\n' % (format(deceased, ',d'), format(deceased_delta, ',d')) +
-            '*Recovered:* %s _(+%s)_\n\n' % (format(recovered, ',d'), format(recovered_delta, ',d')) +
+            '*Confirmed:* %s _(%s)_\n' % (format(confirmed, ',d'), sign_delta(confirmed_delta)) +
+            '*Active:* %s _(%s)_\n' % (format(active, ',d'), sign_delta(active_delta)) +
+            '*Deceased:* %s _(%s)_\n' % (format(deceased, ',d'), sign_delta(deceased_delta)) +
+            '*Recovered:* %s _(%s)_\n\n' % (format(recovered, ',d'), sign_delta(recovered_delta)) +
             '*Mortality rate:* %s%%\n' % round(mortality_rate, 2) +
             '*Recovery rate:* %s%%\n\n' % round(recovery_rate, 2) +
             '[Powered by Bing.](https://bing.com/covid)',
