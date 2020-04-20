@@ -16,6 +16,8 @@ def cov(bot: Bot, update: Update):
     confirmed_delta = 0
     deceased = 0
     deceased_delta = 0
+    active = 0
+    active_delta = 0
     recovered = 0
     recovered_delta = 0
     mortality_rate = 0
@@ -69,6 +71,8 @@ def cov(bot: Bot, update: Update):
         deceased_delta = int(target['totalDeathsDelta'] or 0)
         recovered = int(target['totalRecovered'] or 0)
         recovered_delta = int(target['totalRecoveredDelta'] or 0)
+        active = confirmed - deceased - recovered
+        active_delta = confirmed_delta - deceased_delta - recovered_delta
 
         mortality_rate = (deceased / confirmed) * 100
         recovery_rate = (recovered / confirmed) * 100
@@ -79,6 +83,7 @@ def cov(bot: Bot, update: Update):
             message.chat.id,
             '`COVID-19 Tracker:` *%s*\n\n' % location.upper() +
             '*Confirmed:* %s _(+%s)_\n' % (format(confirmed, ',d'), format(confirmed_delta, ',d')) +
+            '*Active:* %s _(+%s)_\n' % (format(active, ',d'), format(active_delta, ',d')) +
             '*Deceased:* %s _(+%s)_\n' % (format(deceased, ',d'), format(deceased_delta, ',d')) +
             '*Recovered:* %s _(+%s)_\n\n' % (format(recovered, ',d'), format(recovered_delta, ',d')) +
             '*Mortality rate:* %s%%\n' % round(mortality_rate, 2) +
