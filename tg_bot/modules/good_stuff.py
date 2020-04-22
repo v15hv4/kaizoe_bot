@@ -2,7 +2,6 @@ from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, MessageHandler, BaseFilter, run_async
 
 from zalgo_text import zalgo
-from numexpr import evaluate
 import urllib.request, json, random, requests, re
 
 from tg_bot import dispatcher
@@ -76,7 +75,6 @@ def fcoin(bot: Bot, update: Update):
         m = 'tails.'
     else:
         m = 'heads.'
-
     message.reply_text(
         'Its %s' % (m)
     )
@@ -110,28 +108,11 @@ def mock(bot: Bot, update: Update):
                 mocked_list.append(char.upper())
             alt_count += 1
     mocked_message = ''.join(mocked_list)
-
     bot.send_message(
         message.chat.id,
         mocked_message,
         reply_to_message_id = reply_id
     )
-
-@run_async
-def calc(bot: Bot, update: Update):
-    message = update.effective_message
-    try:
-        expr = ''.join(message.text.split(' ')[1:])
-
-        message.reply_text(
-            '`%s`' % str(evaluate(expr).item()),
-            parse_mode = ParseMode.MARKDOWN
-        )
-    except:
-        message.reply_text(
-            '`Unable to evaluate this expression!`',
-            parse_mode = ParseMode.MARKDOWN
-        )
 
 @run_async
 def define(bot: Bot, update: Update):
@@ -146,7 +127,6 @@ def define(bot: Bot, update: Update):
         response = requests.request('GET', ud_url, headers = headers, params = query)
         response_dict = json.loads(response.text)
         topdef = response_dict['list'][0]
-
         message.reply_text(
             '[%s:](%s)\n\n%s\n\n_%s_' % (
                 topdef['word'],
@@ -172,27 +152,24 @@ def zalgofy(bot: Bot, update: Update):
         reply = message.reply_to_message.text
         reply_id = message.reply_to_message.message_id
     cursed_message = zalgo.zalgo().zalgofy(reply)
-
     bot.send_message(
         message.chat.id,
         cursed_message,
         reply_to_message_id = reply_id
     )
 
-CALC_HANDLER = CommandHandler('calc', calc)
+DEFINE_HANDLER = CommandHandler('define', define)
 MOCK_HANDLER = CommandHandler('mock', mock)
 FLIPCOIN_HANDLER = CommandHandler('fcoin',fcoin)
-DEFINE_HANDLER = CommandHandler('define', define)
 ZALGOFY_HANDLER = CommandHandler('zalgofy', zalgofy)
 DAD_JOKE_HANDLER = CommandHandler('dadjoke', dad_joke)
 BRUH_COUNT_HANDLER = MessageHandler(bruh_filter, bruh)
 GREETING_HANDLER = MessageHandler(greeting_filter, greeting)
 
-dispatcher.add_handler(CALC_HANDLER)
-dispatcher.add_handler(MOCK_HANDLER)
 dispatcher.add_handler(DEFINE_HANDLER)
+dispatcher.add_handler(MOCK_HANDLER)
+dispatcher.add_handler(FLIPCOIN_HANDLER)
 dispatcher.add_handler(ZALGOFY_HANDLER)
 dispatcher.add_handler(DAD_JOKE_HANDLER)
-dispatcher.add_handler(FLIPCOIN_HANDLER)
-dispatcher.add_handler(GREETING_HANDLER)
 dispatcher.add_handler(BRUH_COUNT_HANDLER)
+dispatcher.add_handler(GREETING_HANDLER)
