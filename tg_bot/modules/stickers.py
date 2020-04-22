@@ -1,12 +1,14 @@
 from telegram import ParseMode, Update, Bot, Chat
 from telegram.ext import CommandHandler, run_async
-from tg_bot import UNIV_STICKER_OWNER_ID
 from telegram.error import RetryAfter
-from PIL import Image
-from math import ceil
+
 import os
+import urllib.request
+from math import ceil
+from PIL import Image, ImageDraw, ImageFont
 
 from tg_bot import dispatcher
+from tg_bot import UNIV_STICKER_OWNER_ID, ATAF_FONT_URL
 
 
 @run_async
@@ -98,6 +100,50 @@ def add_sticker(bot: Bot, update: Update):
 
     os.remove('sticker_input.png')
 
+@run_async
+def ataf(bot: Bot, update: Update):
+    message = update.effective_message
+    limit = 170
+    inp_str = (''.join(sen + ' ' for sen in message.text.split(' ')[1:])).strip()
+    if(len(inp_str) > limit):
+        message.reply_text('Character limit exceeded!')
+        return
+    ataf_id = 'ataf_%s_%s.webp' % (str(message.chat.id), str(message.message_id))
+    if not os.path.isfile('ataf.jpg'):
+        urllib.request.urlretrieve('https://i.imgur.com/zq0nINE.jpg', 'ataf.jpg')
+    if not os.path.isfile('B612Mono-Regular.ttf'):
+        urllib.request.urlretrieve(ATAF_FONT_URL, 'B612Mono-Regular.ttf')
+    img = Image.open('ataf.jpg')
+    d = ImageDraw.Draw(img)
+    fnt = ImageFont.truetype('B612Mono-Regular.ttf', 18)
+    n = 22
+    parts = [
+        inp_str[i:i + n] + '-' 
+        if inp_str[i:i + n + 1][-1] != ' '
+        else inp_str[i:i + n] 
+        for i in range(0, len(inp_str), n)
+    ]
+    parts[-1] = parts[-1][:-1]
+    offset = 20
+    for idx, inp in enumerate(parts):
+        d.text((265, 50 + (offset * idx)), inp, font = fnt, fill = (0, 0, 0))
+    if img.width < 512 and img.height < 512:
+        if img.width < img.height:
+            asp_ratio = img.width / img.height
+            img = img.resize((ceil(asp_ratio * 512), 512))
+        else:
+            asp_ratio = img.height / img.width
+            img = img.resize((512, ceil(asp_ratio * 512)))
+    else:
+        img.thumbnail((512, 512))
+    img.save(ataf_id)
+    bot.send_document(
+        message.chat.id,
+        document = open(ataf_id, 'rb'),
+        reply_to_message_id = message.message_id
+    )
+    os.remove(ataf_id)
+
 __help__ = """
  - <reply> /addsticker personal: Add replied-to sticker to your personal pack (Default)
  - <reply> /addsticker group: Add replied-to sticker to current group's pack
@@ -106,5 +152,7 @@ __help__ = """
 __mod_name__ = 'Stickers'
 
 ADD_STICKER_HANDLER = CommandHandler('addsticker', add_sticker)
+ATAF_HANDLER = CommandHandler('ataf', ataf)
 
 dispatcher.add_handler(ADD_STICKER_HANDLER)
+dispatcher.add_handler(ATAF_HANDLER)
