@@ -58,7 +58,6 @@ if ENV:
     BAN_STICKER = os.environ.get('BAN_STICKER', 'CAADAgADOwADPPEcAXkko5EB3YGYAg')
     ALLOW_EXCL = os.environ.get('ALLOW_EXCL', False)
     UNIV_STICKER_OWNER_ID = os.environ.get('UNIV_STICKER_OWNER_ID')
-    ATAF_FONT_URL = os.environ.get('ATAF_FONT_URL')
 
 else:
     from tg_bot.config import Development as Config
@@ -101,7 +100,6 @@ else:
     BAN_STICKER = Config.BAN_STICKER
     ALLOW_EXCL = Config.ALLOW_EXCL
     UNIV_STICKER_OWNER_ID = Config.UNIV_STICKER_OWNER_ID
-    ATAF_FONT_URL = Config.ATAF_FONT_URL
 
 
 SUDO_USERS.add(OWNER_ID)

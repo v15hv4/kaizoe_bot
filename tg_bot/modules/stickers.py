@@ -8,7 +8,7 @@ from math import ceil
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from tg_bot import dispatcher
-from tg_bot import UNIV_STICKER_OWNER_ID, ATAF_FONT_URL
+from tg_bot import UNIV_STICKER_OWNER_ID
 
 
 @run_async
@@ -187,10 +187,6 @@ def ataf(bot: Bot, update: Update):
         message.reply_text('Character limit exceeded!')
         return
     ataf_id = 'ataf_%s_%s.webp' % (str(message.chat.id), str(message.message_id))
-    if not os.path.isfile('ataf.jpg'):
-        urllib.request.urlretrieve('https://i.imgur.com/zq0nINE.jpg', 'ataf.jpg')
-    if not os.path.isfile('B612Mono-Regular.ttf'):
-        urllib.request.urlretrieve(ATAF_FONT_URL, 'B612Mono-Regular.ttf')
     img = Image.open('ataf.jpg')
     d = ImageDraw.Draw(img)
     fnt = ImageFont.truetype('B612Mono-Regular.ttf', 18)
