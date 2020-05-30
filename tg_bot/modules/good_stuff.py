@@ -55,6 +55,7 @@ def dad_joke(bot: Bot, update: Update):
     )
 
 
+
 @run_async
 def bruh(bot: Bot, update: Update):
     message = update.effective_message
@@ -65,6 +66,7 @@ def bruh(bot: Bot, update: Update):
         'A bruh moment has been reported.\n\n`Total bruh moments in this chat so far: %d`' % (int(bruh_count)),
         parse_mode = ParseMode.MARKDOWN
     )
+
 
 @run_async
 def fcoin(bot: Bot, update: Update):
@@ -79,6 +81,7 @@ def fcoin(bot: Bot, update: Update):
         'Its %s' % (m)
     )
 
+
 @run_async
 def greeting(bot: Bot, update: Update):
     message = update.effective_message
@@ -86,6 +89,7 @@ def greeting(bot: Bot, update: Update):
     message.reply_text(
         'Hey %s! Sup?' % (message.from_user.first_name)
     )
+
 
 @run_async
 def mock(bot: Bot, update: Update):
@@ -113,6 +117,7 @@ def mock(bot: Bot, update: Update):
         mocked_message,
         reply_to_message_id = reply_id
     )
+
 
 @run_async
 def define(bot: Bot, update: Update):
@@ -142,6 +147,7 @@ def define(bot: Bot, update: Update):
             '¯\_(ツ)_/¯'
         )
 
+
 @run_async
 def zalgofy(bot: Bot, update: Update):
     message = update.effective_message
@@ -158,6 +164,14 @@ def zalgofy(bot: Bot, update: Update):
         reply_to_message_id = reply_id
     )
 
+
+@run_async
+def shrug(bot: Bot, update: Update):
+    message = update.effective_message
+    message.reply_text('¯\_(ツ)_/¯')
+
+
+SHRUG_HANDLER = CommandHandler('shrug', shrug)
 DEFINE_HANDLER = CommandHandler('define', define)
 MOCK_HANDLER = CommandHandler('mock', mock)
 FLIPCOIN_HANDLER = CommandHandler('fcoin',fcoin)
@@ -166,6 +180,7 @@ DAD_JOKE_HANDLER = CommandHandler('dadjoke', dad_joke)
 BRUH_COUNT_HANDLER = MessageHandler(bruh_filter, bruh)
 GREETING_HANDLER = MessageHandler(greeting_filter, greeting)
 
+dispatcher.add_handler(SHRUG_HANDLER)
 dispatcher.add_handler(DEFINE_HANDLER)
 dispatcher.add_handler(MOCK_HANDLER)
 dispatcher.add_handler(FLIPCOIN_HANDLER)
