@@ -91,7 +91,7 @@ def gh(bot: Bot, update: Update, args: List[str]):
             return
 
         try:
-            target = Github(GH_AUTH_TOKEN).get_repo(repo)
+            target = Github().get_repo(repo)
         except:
             update.effective_message.reply_text("Invalid/inaccessible repository!")
             return
@@ -114,6 +114,8 @@ def gh(bot: Bot, update: Update, args: List[str]):
 
 __help__ = """
  - /gh log <n> <repo>: Get the n most recent commits from target repository (default: n = 5).
+ - /gh register <repo>: Set the current chat to track the target repository.
+ - /gh unregister: Untrack all repos in this chat.
 """
 
 __mod_name__ = "Github"
