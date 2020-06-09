@@ -3,6 +3,7 @@ from telegram.ext import CommandHandler, run_async
 
 from tg_bot import dispatcher
 from tg_bot import GH_AUTH_TOKEN
+from tg_bot.modules.sql import github_sql as sql
 
 import re
 from typing import List
@@ -67,16 +68,40 @@ def events(repo, bot, update):
 @run_async
 def gh(bot: Bot, update: Update, args: List[str]):
     try:
+        message = update.effective_message
         command = args[0].lower()
-        if len(args) < 2:
+
+        if command == "unregister":
+            update.effective_message.reply_text(
+                sql.unregister_repo(message.chat.id), parse_mode=ParseMode.MARKDOWN
+            )
+            return
+
+        repo = sql.get_repo(message.chat.id)
+        entries = 5
+        if len(args) > 1:
+            try:
+                entries = int(args[1])
+            except:
+                repo = args[1]
+        if len(args) > 2:
+            repo = args[2]
+        if not repo:
             update.effective_message.reply_text("Target repository not specified!")
-        repo = args[1].lower()
-        target = Github(GH_AUTH_TOKEN).get_repo(repo)
+            return
+
+        try:
+            target = Github(GH_AUTH_TOKEN).get_repo(repo)
+        except:
+            update.effective_message.reply_text("Invalid/inaccessible repository!")
+            return
+
         if command == "commits" or command == "log":
-            entries = 5
-            if len(args) > 2:
-                entries = int(args[2])
             commits(target, entries, bot, update)
+        elif command == "register":
+            update.effective_message.reply_text(
+                sql.register_repo(message.chat.id, repo), parse_mode=ParseMode.MARKDOWN
+            )
         elif command == "events":
             events(target, bot, update)
         else:
@@ -88,7 +113,7 @@ def gh(bot: Bot, update: Update, args: List[str]):
 
 
 __help__ = """
- - /gh log <repo> <n>: Get the n most recent commits from target repository (default: n = 5).
+ - /gh log <n> <repo>: Get the n most recent commits from target repository (default: n = 5).
 """
 
 __mod_name__ = "Github"
