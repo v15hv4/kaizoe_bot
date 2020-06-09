@@ -71,8 +71,7 @@ def gh(bot: Bot, update: Update, args: List[str]):
         if len(args) < 2:
             update.effective_message.reply_text("Target repository not specified!")
         repo = args[1].lower()
-        g = Github(GH_AUTH_TOKEN)
-        target = g.get_repo(repo)
+        target = Github(GH_AUTH_TOKEN).get_repo(repo)
         if command == "commits" or command == "log":
             entries = 5
             if len(args) > 2:
@@ -86,6 +85,13 @@ def gh(bot: Bot, update: Update, args: List[str]):
         update.effective_message.reply_text(
             "Something went wrong! Check command arguments and retry in a while."
         )
+
+
+__help__ = """
+ - /gh log <repo> <n>: Get the n most recent commits from target repository (default: n = 5).
+"""
+
+__mod_name__ = "Github"
 
 
 GH_HANDLER = CommandHandler("gh", gh, pass_args=True)
