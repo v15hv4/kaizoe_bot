@@ -11,3 +11,4 @@ tabulate
 youtube-dl
 zalgo_text
 PyGithub
+gtts
