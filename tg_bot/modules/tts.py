@@ -14,8 +14,8 @@ def say(bot: Bot, update: Update):
     tts_id = "tts_%s_%s.mp3" % (str(message.chat.id), str(message.message_id))
     tts = gTTS(text, lang="en-us")
     tts.save(tts_id)
-    bot.send_audio(
-        message.chat.id, audio=open(tts_id, "rb"), reply_to_message_id=message.message_id
+    bot.send_voice(
+        message.chat.id, voice=open(tts_id, "rb"), reply_to_message_id=message.message_id
     )
     os.remove(tts_id)
 
