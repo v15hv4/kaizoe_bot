@@ -108,7 +108,6 @@ def unblacklist(bot: Bot, update: Update):
 
 
 @run_async
-@user_not_admin
 def del_blacklist(bot: Bot, update: Update):
     chat = update.effective_chat  # type: Optional[Chat]
     message = update.effective_message  # type: Optional[Message]
