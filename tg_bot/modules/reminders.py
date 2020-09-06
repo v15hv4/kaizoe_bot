@@ -8,6 +8,24 @@ from typing import List
 job = updater.job_queue
 
 
+def parse_time(tstring):
+    multiplier = {"h": 3600, "m": 60, "s": 1}
+    unit = tstring[-1]
+    try:
+        value = int(tstring[:-1])
+    except:
+        return -1
+
+    if unit not in multiplier.keys():  # Allow only H, M and S units
+        return -2
+
+    value *= multiplier[unit]
+    if value > 21600:  # Limit max time to 6 hours
+        return -3
+
+    return value
+
+
 def push_reminder(bot, job):
     message = " ".join(job.context["args"][1:]).strip()
     job.context["message"].reply_text(message)
@@ -16,8 +34,21 @@ def push_reminder(bot, job):
 @run_async
 def remindme(bot, update, args: List[str]):
     global job
-    context = {"message": update.effective_message, "args": args}
-    job_remindme = job.run_once(push_reminder, int(args[0]), context=context)
+    timeout_err = {
+        "-1": "Invalid time value specified!",
+        "-2": "Invalid time unit specified!",
+        "-3": "Timeout can not exceed 6 hours!",
+    }
+
+    message = update.effective_message
+    context = {"message": message, "args": args}
+    timeout = parse_time(args[0])
+
+    if timeout < 0:
+        message.reply_text(timeout_err[str(timeout)])
+        return
+
+    job_remindme = job.run_once(push_reminder, timeout, context=context)
 
 
 __mod_name__ = "Reminders"
