@@ -17,7 +17,7 @@ def push_reminder(bot, job):
 def remindme(bot, update, args: List[str]):
     global job
     context = {"message": update.effective_message, "args": args}
-    job_remindme = job.run_once(push_reminder, 30, context=context)
+    job_remindme = job.run_once(push_reminder, int(args[0]), context=context)
 
 
 __mod_name__ = "Reminders"
