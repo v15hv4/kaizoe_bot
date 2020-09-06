@@ -27,8 +27,11 @@ def parse_time(tstring):
 
 
 def push_reminder(bot, job):
-    message = " ".join(job.context["args"][1:]).strip()
-    job.context["message"].reply_text(message)
+    message = "Reminder for @{username}: {text}".format(
+        username=job.context["message"].from_user.username,
+        text=" ".join(job.context["args"][1:]).strip(),
+    )
+    job.context["bot"].send_message(job.context["message"].chat_id, message)
 
 
 @run_async
@@ -41,7 +44,7 @@ def remindme(bot, update, args: List[str]):
     }
 
     message = update.effective_message
-    context = {"message": message, "args": args}
+    context = {"message": message, "args": args, "bot": bot}
     timeout = parse_time(args[0])
 
     if timeout < 0:
@@ -49,6 +52,7 @@ def remindme(bot, update, args: List[str]):
         return
 
     job_remindme = job.run_once(push_reminder, timeout, context=context)
+    message.reply_text("Reminder set!")
 
 
 __mod_name__ = "Reminders"
