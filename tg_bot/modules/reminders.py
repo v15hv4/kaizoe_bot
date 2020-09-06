@@ -9,14 +9,14 @@ job = updater.job_queue
 
 
 def push_reminder(bot, job):
-    job.context["message"].reply_text("sched message")
+    message = " ".join(job.context["args"][1:]).strip()
+    job.context["message"].reply_text(message)
 
 
 @run_async
 def remindme(bot, update, args: List[str]):
     global job
     context = {"message": update.effective_message, "args": args}
-    print(args)
     job_remindme = job.run_once(push_reminder, 30, context=context)
 
 
