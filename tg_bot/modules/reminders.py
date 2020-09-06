@@ -38,8 +38,8 @@ def push_reminder(bot, job):
 def remindme(bot, update, args: List[str]):
     global job
     timeout_err = {
-        "-1": "Invalid time value specified!",
-        "-2": "Invalid time unit specified!",
+        "-1": "Invalid time value specified! It must be an integer value.",
+        "-2": "Invalid time unit specified! It must be either 'h', 'm', or 's'.",
         "-3": "Timeout can not exceed 6 hours!",
     }
 
@@ -56,6 +56,10 @@ def remindme(bot, update, args: List[str]):
 
 
 __mod_name__ = "Reminders"
+
+__help__ = """
+ - /remindme <timeout><h/m/s> <message>: Schedules <message> to be sent in <timeout><h/m/s>. Can't be longer than 6 hours. 
+"""
 
 
 REMINDME_HANDLER = CommandHandler("remindme", remindme, pass_args=True)
