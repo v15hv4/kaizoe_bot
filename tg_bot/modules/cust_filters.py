@@ -69,12 +69,21 @@ def filters(bot: Bot, update: Update):
 
     # determine what the contents of the filter are - text, image, sticker, etc
     if len(extracted) >= 2:
-        offset = len(extracted[1]) - len(msg.text)  # set correct offset relative to command + notename
-        content, buttons = button_markdown_parser(extracted[1], entities=msg.parse_entities(), offset=offset)
+        offset = len(extracted[1]) - len(
+            msg.text
+        )  # set correct offset relative to command + notename
+        content, buttons = button_markdown_parser(
+            extracted[1], entities=msg.parse_entities(), offset=offset
+        )
         content = content.strip()
         if not content:
-            msg.reply_text("There is no note message - You can't JUST have buttons, you need a message to go with it!")
+            msg.reply_text(
+                "There is no note message - You can't JUST have buttons, you need a message to go with it!"
+            )
             return
+
+    elif msg.reply_to_message and msg.reply_to_message.text:
+        content = msg.reply_to_message.text
 
     elif msg.reply_to_message and msg.reply_to_message.sticker:
         content = msg.reply_to_message.sticker.file_id
@@ -110,8 +119,18 @@ def filters(bot: Bot, update: Update):
         if handler.filters == (keyword, chat.id):
             dispatcher.remove_handler(handler, HANDLER_GROUP)
 
-    sql.add_filter(chat.id, keyword, content, is_sticker, is_document, is_image, is_audio, is_voice, is_video,
-                   buttons)
+    sql.add_filter(
+        chat.id,
+        keyword,
+        content,
+        is_sticker,
+        is_document,
+        is_image,
+        is_audio,
+        is_voice,
+        is_video,
+        buttons,
+    )
 
     msg.reply_text("Handler '{}' added!".format(keyword))
     raise DispatcherHandlerStop
@@ -138,7 +157,9 @@ def stop_filter(bot: Bot, update: Update):
             update.effective_message.reply_text("Yep, I'll stop replying to that.")
             raise DispatcherHandlerStop
 
-    update.effective_message.reply_text("That's not a current filter - run /filters for all active filters.")
+    update.effective_message.reply_text(
+        "That's not a current filter - run /filters for all active filters."
+    )
 
 
 @run_async
@@ -172,23 +193,36 @@ def reply_filter(bot: Bot, update: Update):
                 keyboard = InlineKeyboardMarkup(keyb)
 
                 try:
-                    message.reply_text(filt.reply, parse_mode=ParseMode.MARKDOWN,
-                                       disable_web_page_preview=True,
-                                       reply_markup=keyboard)
+                    message.reply_text(
+                        filt.reply,
+                        parse_mode=ParseMode.MARKDOWN,
+                        disable_web_page_preview=True,
+                        reply_markup=keyboard,
+                    )
                 except BadRequest as excp:
                     if excp.message == "Unsupported url protocol":
-                        message.reply_text("You seem to be trying to use an unsupported url protocol. Telegram "
-                                           "doesn't support buttons for some protocols, such as tg://. Please try "
-                                           "again, or ask in @MarieSupport for help.")
+                        message.reply_text(
+                            "You seem to be trying to use an unsupported url protocol. Telegram "
+                            "doesn't support buttons for some protocols, such as tg://. Please try "
+                            "again, or ask in @MarieSupport for help."
+                        )
                     elif excp.message == "Reply message not found":
-                        bot.send_message(chat.id, filt.reply, parse_mode=ParseMode.MARKDOWN,
-                                         disable_web_page_preview=True,
-                                         reply_markup=keyboard)
+                        bot.send_message(
+                            chat.id,
+                            filt.reply,
+                            parse_mode=ParseMode.MARKDOWN,
+                            disable_web_page_preview=True,
+                            reply_markup=keyboard,
+                        )
                     else:
-                        message.reply_text("This note could not be sent, as it is incorrectly formatted. Ask in "
-                                           "@MarieSupport if you can't figure out why!")
+                        message.reply_text(
+                            "This note could not be sent, as it is incorrectly formatted. Ask in "
+                            "@MarieSupport if you can't figure out why!"
+                        )
                         LOGGER.warning("Message %s could not be parsed", str(filt.reply))
-                        LOGGER.exception("Could not parse filter %s in chat %s", str(filt.keyword), str(chat.id))
+                        LOGGER.exception(
+                            "Could not parse filter %s in chat %s", str(filt.keyword), str(chat.id)
+                        )
 
             else:
                 # LEGACY - all new filters will have has_markdown set to True.
