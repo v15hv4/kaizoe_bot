@@ -2,7 +2,6 @@ from telegram import ParseMode, Update, Bot, Chat, InlineKeyboardButton, InlineK
 from telegram.ext import CommandHandler, MessageHandler, BaseFilter, run_async, CallbackQueryHandler
 
 from tg_bot import dispatcher
-from tg_bot.__main__ import help_button
 
 import requests
 from parsel import Selector
@@ -13,50 +12,47 @@ from urllib.request import urlopen
 
 
 def imdb_searchdata(bot: Bot, update: Update):
+    query_raw = update.callback_query
+    query = query_raw.data.split("$")
+    if query[1] != query_raw.from_user.username:
+        return
+    title = ""
+    rating = ""
+    date = ""
+    synopsis = ""
+    url_sel = "https://www.imdb.com/title/%s/" % (query[0])
+    text_sel = requests.get(url_sel).text
+    selector_global = Selector(text=text_sel)
+    title = selector_global.xpath('//div[@class="title_wrapper"]/h1/text()').get().strip()
     try:
-        query_raw = update.callback_query
-        query = query_raw.data.split("$")
-        if query[1] != query_raw.from_user.username:
-            return
-        title = ""
-        rating = ""
-        date = ""
-        synopsis = ""
-        url_sel = "https://www.imdb.com/title/%s/" % (query[0])
-        text_sel = requests.get(url_sel).text
-        selector_global = Selector(text=text_sel)
-        title = selector_global.xpath('//div[@class="title_wrapper"]/h1/text()').get().strip()
-        try:
-            rating = (
-                selector_global.xpath('//div[@class="ratingValue"]/strong/span/text()')
-                .get()
-                .strip()
-            )
-        except:
-            rating = "-"
-        try:
-            date = (
-                "("
-                + selector_global.xpath('//div[@class="title_wrapper"]/h1/span/a/text()')
-                .getall()[-1]
-                .strip()
-                + ")"
-            )
-        except:
-            date = selector_global.xpath('//div[@class="subtext"]/a/text()').getall()[-1].strip()
-        try:
-            synopsis_list = selector_global.xpath('//div[@class="summary_text"]/text()').getall()
-            synopsis = re.sub(
-                " +",
-                " ",
-                re.sub(r"\([^)]*\)", "", "".join(sentence.strip() for sentence in synopsis_list)),
-            )
-        except:
-            synopsis = "_No synopsis available._"
-        movie_data = "*%s*, _%s_\n★ *%s*\n\n%s" % (title, date, rating, synopsis)
-        query_raw.edit_message_text(movie_data, parse_mode=ParseMode.MARKDOWN)
+        rating = (
+            selector_global.xpath('//div[@class="ratingValue"]/strong/span/text()')
+            .get()
+            .strip()
+        )
     except:
-        help_button(bot, update)
+        rating = "-"
+    try:
+        date = (
+            "("
+            + selector_global.xpath('//div[@class="title_wrapper"]/h1/span/a/text()')
+            .getall()[-1]
+            .strip()
+            + ")"
+        )
+    except:
+        date = selector_global.xpath('//div[@class="subtext"]/a/text()').getall()[-1].strip()
+    try:
+        synopsis_list = selector_global.xpath('//div[@class="summary_text"]/text()').getall()
+        synopsis = re.sub(
+            " +",
+            " ",
+            re.sub(r"\([^)]*\)", "", "".join(sentence.strip() for sentence in synopsis_list)),
+        )
+    except:
+        synopsis = "_No synopsis available._"
+    movie_data = "*%s*, _%s_\n★ *%s*\n\n%s" % (title, date, rating, synopsis)
+    query_raw.edit_message_text(movie_data, parse_mode=ParseMode.MARKDOWN)
 
 
 @run_async
