@@ -6,3 +6,6 @@ kaizoe_env/
 .pydevproject
 .directory
 .vscode
+.venv/
+.nvimrc/
+*.session
