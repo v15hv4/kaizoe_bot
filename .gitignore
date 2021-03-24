@@ -8,4 +8,5 @@ kaizoe_env/
 .vscode
 .venv/
 .nvimrc/
+.vim/
 *.session
