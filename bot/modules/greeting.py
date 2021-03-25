@@ -10,4 +10,7 @@ async def greeting(_, message):
 @client.on_message(filters.regex(f"^{prefix}.*"))
 async def handle_command(_, message):
     command, *args = message.text.split(" ")
-    await message.reply_text(f"The {command} command with arguments {str(args)} is undefined.")
+    await message.reply_text(
+        f"The `{command}` command with arguments `{str(args)}` is undefined.",
+        parse_mode="markdown",
+    )
