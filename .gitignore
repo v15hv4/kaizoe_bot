@@ -1,5 +1,3 @@
-tg_bot/config.py
-kaizoe_env/
 *.pyc
 .idea/
 .project
@@ -10,3 +8,4 @@ kaizoe_env/
 .nvimrc/
 .vim/
 *.session
+*.session-journal
