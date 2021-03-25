@@ -1,14 +1,34 @@
 import asyncio
-from pyrogram import Client
+import importlib
 
-from bot import API_ID, API_HASH, BOT_TOKEN, SESSION_NAME
-
-client = Client(session_name=SESSION_NAME, api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
-
-
-@client.on_message()
-async def hey(_, message):
-    await client.send_message(-588968921, "hey")
+from bot import LOGGER, CLIENT
+from bot.modules import ALL_MODULES
 
 
-client.run()
+IMPORTED = {}
+HELPABLE = {}
+
+# import modules
+for module_name in ALL_MODULES:
+    imported_module = importlib.import_module(f"bot.modules.{module_name}")
+    if not hasattr(imported_module, "__mod_name__"):
+        imported_module.__mod_name__ = imported_module.__name__
+
+    if not imported_module.__mod_name__.lower() in IMPORTED:
+        IMPORTED[imported_module.__mod_name__.lower()] = imported_module
+    else:
+        raise Exception("Can't have two modules with the same name!")
+
+    if hasattr(imported_module, "__help__") and imported_module.__help__:
+        HELPABLE[imported_module.__mod_name__.lower()] = imported_module
+
+
+# default commands
+# @client.on_message()
+# async def replytoallmessages(_, message):
+#     await message.reply_text("hey")
+
+
+if __name__ == "__main__":
+    LOGGER.info(f"Successfully loaded: {str(ALL_MODULES)}")
+    CLIENT.run()

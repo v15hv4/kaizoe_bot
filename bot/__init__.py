@@ -2,6 +2,8 @@ import os
 import sys
 import logging
 
+from pyrogram import Client
+
 # enable logging
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -30,12 +32,27 @@ if ENV:
         raise Exception("Invalid OWNER_ID!")
 
     API_HASH = os.environ.get("API_HASH", None)
+    USE_BOT_API = os.environ.get("USE_BOT_API", None)
     BOT_TOKEN = os.environ.get("BOT_TOKEN", None)
+    PHONE_NUMBER = os.environ.get("PHONE_NUMBER", None)
     SESSION_NAME = os.environ.get("SESSION_NAME", None)
     COMMAND_PREFIX = os.environ.get("COMMAND_PREFIX", None)
+    LOAD = os.environ.get("LOAD", "").split()
+    NO_LOAD = os.environ.get("NO_LOAD", "").split()
 
 else:
-    from bot.config import API_ID, OWNER_ID, API_HASH, BOT_TOKEN, SESSION_NAME, COMMAND_PREFIX
+    from bot.config import (
+        API_ID,
+        OWNER_ID,
+        API_HASH,
+        USE_BOT_API,
+        BOT_TOKEN,
+        PHONE_NUMBER,
+        SESSION_NAME,
+        COMMAND_PREFIX,
+        LOAD,
+        NO_LOAD,
+    )
 
     try:
         API_ID = int(API_ID)
@@ -46,3 +63,18 @@ else:
         OWNER_ID = int(OWNER_ID)
     except ValueError:
         raise Exception("Invalid OWNER_ID!")
+
+if USE_BOT_API:
+    CLIENT = Client(
+        session_name=SESSION_NAME,
+        api_id=API_ID,
+        api_hash=API_HASH,
+        bot_token=BOT_TOKEN,
+    )
+else:
+    CLIENT = Client(
+        session_name=SESSION_NAME,
+        api_id=API_ID,
+        api_hash=API_HASH,
+        phone_number=PHONE_NUMBER,
+    )
